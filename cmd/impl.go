@@ -5,11 +5,11 @@ import (
 	"os"
 	"strings"
 
-	"github.com/yourusername/pak/internal/cache"
-	"github.com/yourusername/pak/internal/dpkg"
-	"github.com/yourusername/pak/internal/fetch"
-	"github.com/yourusername/pak/internal/index"
-	"github.com/yourusername/pak/internal/resolver"
+	"github.com/user14923929/pak/internal/cache"
+	"github.com/user14923929/pak/internal/dpkg"
+	"github.com/user14923929/pak/internal/fetch"
+	"github.com/user14923929/pak/internal/index"
+	"github.com/user14923929/pak/internal/resolver"
 )
 
 // sourcesFile is the repo list, one URL per line (base URL of the repo).

@@ -3,7 +3,7 @@ package resolver
 import (
 	"fmt"
 
-	"github.com/yourusername/pak/internal/index"
+	"github.com/user14923929/pak/internal/index"
 )
 
 // Resolve returns an ordered install list for the requested packages,

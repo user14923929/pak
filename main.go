@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/yourusername/pak/cmd"
+	"github.com/user14923929/pak/cmd"
 )
 
 // version is injected at build time via -ldflags="-X main.version=..."

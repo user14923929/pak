@@ -29,7 +29,7 @@ Grab the latest release for your architecture from the
 
 ```sh
 # Linux x86_64
-curl -Lo pak https://github.com/yourusername/pak/releases/latest/download/pak-linux-amd64
+curl -Lo pak https://github.com/user14923929/pak/releases/latest/download/pak-linux-amd64
 chmod +x pak
 sudo mv pak /usr/local/bin/pak
 ```
@@ -40,7 +40,7 @@ Requires Go 1.22+ or Docker.
 
 **With Go:**
 ```sh
-git clone https://github.com/yourusername/pak
+git clone https://github.com/user14923929/pak
 cd pak
 go build -o pak .
 sudo mv pak /usr/local/bin/pak
@@ -48,7 +48,7 @@ sudo mv pak /usr/local/bin/pak
 
 **With Docker (no Go needed):**
 ```sh
-git clone https://github.com/yourusername/pak
+git clone https://github.com/user14923929/pak
 cd pak
 make build          # produces ./pak via multi-stage Docker build
 sudo mv pak /usr/local/bin/pak

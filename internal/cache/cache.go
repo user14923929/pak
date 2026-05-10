@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/yourusername/pak/internal/index"
+	"github.com/user14923929/pak/internal/index"
 )
 
 const cacheDir = "/var/cache/pak"
