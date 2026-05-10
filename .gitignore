@@ -1,0 +1,14 @@
+# binary
+pak
+
+# build output
+dist/
+
+# Go
+*.test
+*.out
+vendor/
+
+# OS
+.DS_Store
+Thumbs.db
