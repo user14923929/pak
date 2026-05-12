@@ -27,8 +27,9 @@ func runUpdate(_ []string) error {
 		return fmt.Errorf("no repositories configured — add entries to %s", sourcesFile)
 	}
 
+	arch := hostArch()
 	for _, src := range sources {
-		pkgsURL := src + "/Packages.gz"
+		pkgsURL := src.PackagesURL(arch)
 		fmt.Printf(":: fetching %s\n", pkgsURL)
 
 		rc, err := fetch.Stream(pkgsURL)
@@ -44,7 +45,7 @@ func runUpdate(_ []string) error {
 			continue
 		}
 
-		if err := cache.Save(src, pkgs); err != nil {
+		if err := cache.Save(pkgsURL, pkgs); err != nil {
 			return fmt.Errorf("cache save: %w", err)
 		}
 		fmt.Printf("   %d packages indexed\n", len(pkgs))
@@ -85,7 +86,7 @@ func runInstall(args []string) error {
 	if err != nil || len(sources) == 0 {
 		return fmt.Errorf("no repository configured")
 	}
-	baseURL := sources[0]
+	baseURL := strings.TrimRight(sources[0].URL, "/")
 
 	for _, p := range plan {
 		url := baseURL + "/" + p.Filename
@@ -174,9 +175,43 @@ func runUpgrade(_ []string) error {
 	return nil
 }
 
+// hostArch returns the Debian architecture string for the current machine.
+func hostArch() string {
+	// runtime.GOARCH → debian arch name
+	switch os.Getenv("GOARCH") {
+	case "arm64":
+		return "arm64"
+	case "386":
+		return "i386"
+	default:
+		return "amd64"
+	}
+}
+
 // --- helpers ---
 
-func readSources() ([]string, error) {
+// Source represents one parsed line from sources.list.
+// Format: deb <url> <distro> <component...>
+// Example: deb https://deb.debian.org/debian bookworm main contrib
+type Source struct {
+	URL        string // https://deb.debian.org/debian
+	Distro     string // bookworm
+	Components []string // [main, contrib]
+}
+
+// PackagesURL builds the full URL to the Packages.gz index file.
+// e.g. https://deb.debian.org/debian/dists/bookworm/main/binary-amd64/Packages.gz
+func (s Source) PackagesURL(arch string) string {
+	// use first component only for now
+	comp := "main"
+	if len(s.Components) > 0 {
+		comp = s.Components[0]
+	}
+	return fmt.Sprintf("%s/dists/%s/%s/binary-%s/Packages.gz",
+		strings.TrimRight(s.URL, "/"), s.Distro, comp, arch)
+}
+
+func readSources() ([]Source, error) {
 	data, err := os.ReadFile(sourcesFile)
 	if os.IsNotExist(err) {
 		return nil, nil
@@ -184,13 +219,32 @@ func readSources() ([]string, error) {
 	if err != nil {
 		return nil, fmt.Errorf("read %s: %w", sourcesFile, err)
 	}
-	var out []string
+
+	var out []Source
 	for _, line := range strings.Split(string(data), "\n") {
 		line = strings.TrimSpace(line)
 		if line == "" || strings.HasPrefix(line, "#") {
 			continue
 		}
-		out = append(out, line)
+		// strip leading "deb " or "deb-src " type prefix
+		fields := strings.Fields(line)
+		if len(fields) < 3 {
+			fmt.Fprintf(os.Stderr, "  warning: malformed sources.list line: %q\n", line)
+			continue
+		}
+		start := 0
+		if fields[0] == "deb" || fields[0] == "deb-src" {
+			start = 1
+		}
+		if len(fields) < start+2 {
+			fmt.Fprintf(os.Stderr, "  warning: malformed sources.list line: %q\n", line)
+			continue
+		}
+		out = append(out, Source{
+			URL:        fields[start],
+			Distro:     fields[start+1],
+			Components: fields[start+2:],
+		})
 	}
 	return out, nil
 }
