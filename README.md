@@ -2,6 +2,10 @@
 
 > A lightweight package manager for dpkg-based Linux systems.
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+![Platform: Linux](https://img.shields.io/badge/platform-Linux-lightgrey)
+![Language: Go](https://img.shields.io/badge/language-Go-cyan)
+
 `pak` sits on top of `dpkg` and handles everything it doesn't — fetching
 package indexes, resolving dependencies, downloading `.deb` files, and handing
 them off to `dpkg` for installation. No daemon, no bloat, no magic.
